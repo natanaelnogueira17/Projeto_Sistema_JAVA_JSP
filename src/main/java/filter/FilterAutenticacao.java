@@ -1,6 +1,8 @@
 package filter;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -14,10 +16,14 @@ import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import connection.SingleConnecton;
+
 @WebFilter(urlPatterns = "/principal/*") // intercepta todas as requisicoes que vinheram do projeto ou mapeamento
 public class FilterAutenticacao extends HttpFilter implements Filter {
 
 	private static final long serialVersionUID = 1L;
+
+	private static Connection connection;
 
 	public FilterAutenticacao() {
 		super();
@@ -27,7 +33,12 @@ public class FilterAutenticacao extends HttpFilter implements Filter {
 	// encerr os processos quando o servidor e parado
 	// mataria a conexao com banco
 	public void destroy() {
-
+		try {
+			connection.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	// intercepta as requisicoes e respostas // tudo vai passar por ele
@@ -36,30 +47,43 @@ public class FilterAutenticacao extends HttpFilter implements Filter {
 	// validar e fazer direcionamento de paginas
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		HttpServletRequest req = (HttpServletRequest) request;
-		HttpSession session = req.getSession();
 
-		String usuarioLogado = (String) session.getAttribute("usuario");
+		try {
 
-		String urlParaAutenticar = req.getServletPath();
+			HttpServletRequest req = (HttpServletRequest) request;
+			HttpSession session = req.getSession();
 
-		// validar se esta logado senao redireciona pra tela de login
-		if (usuarioLogado == null
-				&& !urlParaAutenticar.equalsIgnoreCase("/principal/ServletLogin")) {
-			RequestDispatcher redireciona = request.getRequestDispatcher("/index.jsp?url=" + urlParaAutenticar);
-			request.setAttribute("msg", "por favor realizar o login");
-			redireciona.forward(request, response);
-			return;
-		} else {
+			String usuarioLogado = (String) session.getAttribute("usuario");
 
-			chain.doFilter(request, response);
+			String urlParaAutenticar = req.getServletPath();
 
+			// validar se esta logado senao redireciona pra tela de login
+			if (usuarioLogado == null && !urlParaAutenticar.equalsIgnoreCase("/principal/ServletLogin")) {
+				RequestDispatcher redireciona = request.getRequestDispatcher("/index.jsp?url=" + urlParaAutenticar);
+				request.setAttribute("msg", "por favor realizar o login");
+				redireciona.forward(request, response);
+				return;
+			} else {
+
+				chain.doFilter(request, response);
+
+			}
+			
+			connection.commit();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		}
 
 	}
 
 	public void init(FilterConfig fConfig) throws ServletException { // inicia os processos ou recursos quando o
-																		// servidor sobe o projeto
+		connection = SingleConnecton.getConnection(); // servidor sobe o projeto
 
 	}
 
