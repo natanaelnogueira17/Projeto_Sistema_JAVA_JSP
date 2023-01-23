@@ -53,8 +53,8 @@ h5{
 				</div>
 			 </div>			 
 			 <div class="col-md-6">
-				<label class = "form-label">Senha</label required>
-				<input   class="form-control" name="Senha" type="password">	
+				<label class = "form-label">Senha</label >
+				<input   class="form-control" name="Senha" type="password" required >	
 				<div class="invalid-feedback">
 					Obrigatorio
 				</div>
