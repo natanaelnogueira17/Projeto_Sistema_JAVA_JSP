@@ -1,0 +1,20 @@
+CREATE DATABASE jsp
+  WITH OWNER = postgres
+       ENCODING = 'UTF8'
+       TABLESPACE = pg_default
+       LC_COLLATE = 'Portuguese_Brazil.1252'
+       LC_CTYPE = 'Portuguese_Brazil.1252'
+       CONNECTION LIMIT = -1;
+
+       
+       
+create table model_login(
+  login character varying(255),
+  senha character varying(255),
+  CONSTRAINT login_unique UNIQUE (login)
+);
+
+insert into model_login(login, senha)  values ('admin', 'admin');
+
+
+select *from model_login;

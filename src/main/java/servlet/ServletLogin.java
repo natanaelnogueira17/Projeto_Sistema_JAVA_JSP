@@ -9,12 +9,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dao.LoginRepositoryDao;
 import model.ModelLogin;
 
 //o chamado controller sao as servlets ou servletLoginController
-@WebServlet(urlPatterns = {"/principal/ServletLogin", "/ServletLogin"}) // mapeamento de url que vem da tela
+@WebServlet(urlPatterns = { "/principal/ServletLogin", "/ServletLogin" }) // mapeamento de url que vem da tela
 public class ServletLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
+	private LoginRepositoryDao dao = new LoginRepositoryDao();
 
 	public ServletLogin() {
 		super();
@@ -27,39 +30,45 @@ public class ServletLogin extends HttpServlet {
 	}
 
 	// recebe os dados enviados por um formulario
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		String login = request.getParameter("Login");
 		String senha = request.getParameter("Senha");
 		String url = request.getParameter("url");
-		
-		if(login != null && !login.isEmpty() && senha !=null && !senha.isEmpty()) {
-			
-			ModelLogin modelLogin = new ModelLogin();
-			modelLogin.setLogin(login);
-			modelLogin.setSenha(senha);
-			
-			if(modelLogin.getLogin().equalsIgnoreCase("admin")&& modelLogin.getSenha().equalsIgnoreCase("admin")) {
-				request.getSession().setAttribute("usuario", modelLogin.getLogin());
-				
-				if(url == null || url.equals("null")) {
-					url = "principal/principal.jsp";
+
+		try {
+
+			if (login != null && !login.isEmpty() && senha != null && !senha.isEmpty()) {
+
+				ModelLogin modelLogin = new ModelLogin();
+				modelLogin.setLogin(login);
+				modelLogin.setSenha(senha);
+
+				if (dao.validarAutenticacao(modelLogin)) {
+					request.getSession().setAttribute("usuario", modelLogin.getLogin());
+
+					if (url == null || url.equals("null")) {
+						url = "principal/principal.jsp";
+					}
+
+					RequestDispatcher dispatcher = request.getRequestDispatcher(url);
+					dispatcher.forward(request, response);
+				} else {
+					RequestDispatcher dispatcher = request.getRequestDispatcher("index.jsp");
+					request.setAttribute("msg", "informe o login e senha corretamente");
+					dispatcher.forward(request, response);
 				}
-				
-				RequestDispatcher dispatcher = request.getRequestDispatcher(url);
-				dispatcher.forward(request, response);
-			}else {
+
+			} else {
 				RequestDispatcher dispatcher = request.getRequestDispatcher("index.jsp");
 				request.setAttribute("msg", "informe o login e senha corretamente");
 				dispatcher.forward(request, response);
 			}
-			
-			
-		}else {
-			RequestDispatcher dispatcher = request.getRequestDispatcher("index.jsp");
-			request.setAttribute("msg", "informe o login e senha corretamente");
-			dispatcher.forward(request, response);
+
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
+
 	}
 
 }
