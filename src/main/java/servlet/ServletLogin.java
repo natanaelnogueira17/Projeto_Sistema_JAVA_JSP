@@ -67,6 +67,9 @@ public class ServletLogin extends HttpServlet {
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			RequestDispatcher dispatcher = request.getRequestDispatcher("erro.jsp");
+			request.setAttribute("msg", e.getMessage());
+			dispatcher.forward(request, response);
 		}
 
 	}
