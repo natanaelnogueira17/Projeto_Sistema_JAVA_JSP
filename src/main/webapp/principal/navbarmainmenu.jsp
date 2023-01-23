@@ -19,7 +19,7 @@
                                       <li class="more-details">
                                           <a href="user-profile.html"><i class="ti-user"></i>View Profile</a>
                                           <a href="#!"><i class="ti-settings"></i>Settings</a>
-                                          <a href="auth-normal-sign-in.html"><i class="ti-layout-sidebar-left"></i>Logout</a>
+                                          <a href="ServletLogin?acao=logout"><i class="ti-layout-sidebar-left"></i>Logout</a>
                                       </li>
                                   </ul>
                               </div>
@@ -27,7 +27,7 @@
                           <div class="p-15 p-b-0">
                               <form class="form-material">
                                   <div class="form-group form-primary">
-                                      <input type="text" name="footer-email" class="form-control" required="">
+                                      <input type="text" name="footer-email" class="form-control" required>
                                       <span class="form-bar"></span>
                                       <label class="float-label"><i class="fa fa-search m-r-10"></i>Search Friend</label>
                                   </div>
